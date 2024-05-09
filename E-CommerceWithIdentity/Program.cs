@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using E_CommerceWithIdentity.Areas.Identity.Data;
+using E_CommerceWithIdentity.Services.Abstract;
+using E_CommerceWithIdentity.Services.Concrete;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +16,7 @@ builder.Services.AddIdentity<ApplicationUser , IdentityRole>()
     .AddEntityFrameworkStores<E_CommerceWithIdentityContext>()
     .AddDefaultTokenProviders()
     .AddDefaultUI(); // AddDefaultUI() bu noktada eklenmeli
+builder.Services.AddScoped<ICategoryService, CategoryService>();
 
 builder.Services.AddControllersWithViews();
 

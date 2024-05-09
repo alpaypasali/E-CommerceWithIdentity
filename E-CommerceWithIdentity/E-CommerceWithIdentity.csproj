@@ -20,4 +20,8 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="7.0.12" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\E-Commerce_Shared\E-Commerce_Shared.csproj" />
+  </ItemGroup>
+
 </Project>

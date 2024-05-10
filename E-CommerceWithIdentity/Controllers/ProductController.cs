@@ -2,11 +2,14 @@
 using E_Commerce_Shared.Entity;
 using E_CommerceWithIdentity.Models;
 using E_CommerceWithIdentity.Services.Abstract;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Build.Framework;
 
 namespace E_CommerceWithIdentity.Controllers
 {
+    [Authorize(Roles ="Admin")]
     public class ProductController : Controller
     {
         private readonly IProductService _productService;
@@ -49,12 +52,32 @@ namespace E_CommerceWithIdentity.Controllers
                 var result = await _productService.CreateProduct(productDto);
                 if(result.Success is true)
                 {
-                    return RedirectToAction("CreateProduct", "Product");
+                    return RedirectToAction("ProductList", "Product");
                 }
 
             }
-            return RedirectToAction("CreateProduct", "Product");
+            return RedirectToAction("ProductList", "Product");
 
+        }
+        public async Task<IActionResult> ProductList()
+        {
+            var result = await _productService.ListProduct();
+            if(result.Data is not null)
+            {
+                return View(result.Data);
+            }
+            return RedirectToAction("CreateProduct", "Product");
+        }
+        [HttpPost("Delete/{productId}")]
+        public async Task<IActionResult> DeleteProduct([FromRoute] int productId)
+        {
+            var result = await _productService.DeleteProduct(productId);
+            if(result.Success is true)
+            {
+                return RedirectToAction("ProductList", "Product");
+
+            }
+            return BadRequest("One error occured");
         }
 
         public IActionResult Index()

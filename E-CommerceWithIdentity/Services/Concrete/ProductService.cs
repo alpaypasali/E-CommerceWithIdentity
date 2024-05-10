@@ -58,11 +58,12 @@ namespace E_CommerceWithIdentity.Services.Concrete
                     return _response;
                 
                 }
-                _response.Success = false;
-                _response.Message = "Operation failed";
-                return _response;
+               
                 
             }
+            _response.Success = false;
+            _response.Message = "Operation failed";
+            return _response;
         }
 
         public async Task<ServiceResponse<Product>> GetProduct(int productId)

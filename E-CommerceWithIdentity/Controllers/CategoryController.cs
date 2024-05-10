@@ -1,10 +1,13 @@
 ﻿using E_Commerce_Shared.Dto;
 using E_CommerceWithIdentity.Services.Abstract;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NuGet.Protocol;
+using System.Data;
 
 namespace E_CommerceWithIdentity.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class CategoryController : Controller
     {
         private readonly ICategoryService _categoryService;
@@ -13,7 +16,7 @@ namespace E_CommerceWithIdentity.Controllers
         {
             _categoryService = categoryService;
         }
-
+        [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
             var result = await _categoryService.ListCategory();

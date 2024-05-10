@@ -17,6 +17,7 @@ builder.Services.AddIdentity<ApplicationUser , IdentityRole>()
     .AddDefaultTokenProviders()
     .AddDefaultUI(); // AddDefaultUI() bu noktada eklenmeli
 builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<IProductService, ProductService>();
 
 builder.Services.AddControllersWithViews();
 

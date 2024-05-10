@@ -3,10 +3,12 @@ using E_Commerce_Shared.Dto;
 using E_Commerce_Shared.Entity;
 using E_CommerceWithIdentity.Areas.Identity.Data;
 using E_CommerceWithIdentity.Services.Abstract;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 
 namespace E_CommerceWithIdentity.Services.Concrete
 {
+    
     public class CategoryService : ICategoryService
     {
         private readonly E_CommerceWithIdentityContext _context;

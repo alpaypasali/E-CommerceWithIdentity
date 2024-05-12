@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Build.Framework;
+using NuGet.DependencyResolver;
 
 namespace E_CommerceWithIdentity.Controllers
 {
@@ -22,6 +23,56 @@ namespace E_CommerceWithIdentity.Controllers
             _categoryService = categoryService;
             _webHostEnvironment = webHostEnvironment;
         }
+
+        [HttpGet("EditProduct/{productId}")]
+        public async Task<IActionResult> UpdateProduct([FromRoute]int productId)
+        {
+            ProductUpdateModel updateModel = new ProductUpdateModel();
+            var prodcut = await  _productService.GetProduct(productId);
+          
+            updateModel.ProductId = productId;
+            updateModel.ProductName = prodcut.Data.ProductName;
+            updateModel.ProductDescription = prodcut.Data.ProductDescription;
+            updateModel.ImageUrl = prodcut.Data.ImageUrl;
+            updateModel.Price = prodcut.Data.Price;
+            updateModel.CategoryId = prodcut.Data.CategoryId;
+            LoadCategorySelectDataView();
+            if (prodcut is not null)
+            {
+                return View(updateModel);
+             }
+            return BadRequest(prodcut.Message);
+             
+        }
+        [HttpPost("ProductEdit/{productId}")]
+        public async Task<IActionResult> EditProduct([FromRoute] int productId, ProductUpdateModel model)
+        {
+            ProductDto productDto = new ProductDto();
+            var productForPhoto = await _productService.GetProduct(productId);
+            productDto.ProductDescription = model.ProductDescription;
+            productDto.ProductName = model.ProductName;
+            productDto.Price = model.Price;
+            productDto.ImageUrl = productForPhoto.Data.ImageUrl;
+            productDto.CategoryId = model.CategoryId;
+            if(model.CoverPhoto is not null)
+            {
+                string folder = "Images\\";
+                folder += model.CoverPhoto.FileName;
+                string serverFolder = Path.Combine(_webHostEnvironment.WebRootPath, folder);
+                await model.CoverPhoto.CopyToAsync(new FileStream(serverFolder, FileMode.Create));
+                productDto.ImageUrl = model.CoverPhoto.FileName;
+            }
+            var result = await _productService.UpdateProduct(productId,productDto);
+            if(result.Success is true)
+            {
+                 return RedirectToAction(nameof(ProductList));
+
+            }
+            return BadRequest(result.Message); 
+             
+
+        }
+        
         [HttpGet]
         public async Task<IActionResult> CreateProduct()
         {

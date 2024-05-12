@@ -1,5 +1,6 @@
 ﻿using E_Commerce_Shared.Dto;
 using E_Commerce_Shared.Entity;
+using E_CommerceWithIdentity.Areas.Identity.Data;
 using E_CommerceWithIdentity.Models;
 using E_CommerceWithIdentity.Services.Abstract;
 using Microsoft.AspNetCore.Authorization;
@@ -16,12 +17,16 @@ namespace E_CommerceWithIdentity.Controllers
         private readonly IProductService _productService;
         private readonly ICategoryService _categoryService;
         private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly IProductImageService _productImageService;
+        private readonly E_CommerceWithIdentityContext _context;
 
-        public ProductController(IProductService productService, ICategoryService categoryService, IWebHostEnvironment webHostEnvironment)
+        public ProductController(IProductService productService, ICategoryService categoryService, IWebHostEnvironment webHostEnvironment, IProductImageService productImageService, E_CommerceWithIdentityContext context)
         {
             _productService = productService;
             _categoryService = categoryService;
             _webHostEnvironment = webHostEnvironment;
+            _productImageService = productImageService;
+            _context = context;
         }
 
         [HttpGet("EditProduct/{productId}")]
@@ -130,12 +135,53 @@ namespace E_CommerceWithIdentity.Controllers
             }
             return BadRequest("One error occured");
         }
-        //[HttpPost("CreateMultiple/{productId}")]
-        //public async Task<IActionResult> CreateMultipleImage(ProductMultipleImage model , int productId)
-        //{
-        //    List<ProductImageDto> _product 
+        [HttpGet("MultipleImage/{productId}")]
+        public async Task<IActionResult> MultipleImage(ProductMultipleImage model , [FromRoute] int productId)
+        {
+            return View();  
+        }
+        [HttpPost("CreateMultiple/{productId}")]
+        public async Task<IActionResult> CreateMultipleImage(ProductMultipleImage model, int productId)
+        {
+            List<ProductImageDto> _productImageDtos = new List<ProductImageDto>();
+            if(model.CoverPhoto is not null)
+            {
+                foreach(var item in model.CoverPhoto)
+                {
+                    ProductImageDto _model = new ProductImageDto();
+                    string folder = "Images\\";
+                    folder += item.FileName;
+                    string serverFolder = Path.Combine(_webHostEnvironment.WebRootPath, folder);
+                    using (var fileStream = new FileStream(serverFolder, FileMode.Create))
+                    {
+                        await item.CopyToAsync(fileStream);
+                    }
 
-        //}
+                    _model.ImageName = item.FileName;
+                    _productImageDtos.Add(_model);
+
+
+                }
+                List<ProductImage> _productImages = new List<ProductImage>();
+                foreach(var item in _productImageDtos)
+                {
+                    ProductImage productImage = new ProductImage();
+                    productImage.ImageName = item.ImageName;
+                    _productImages.Add(productImage);   
+
+                }
+                await _context.ProductImages.AddRangeAsync(_productImages);
+                await _context.SaveChangesAsync();
+                var result = await _productImageService.CreateMultipleImageProduct(_productImageDtos, productId);
+                if(result.Data is not null)
+                {
+                    return RedirectToAction(nameof(ProductList));
+                }
+
+                  
+            }
+            return View();
+        }
 
         public IActionResult Index()
         {

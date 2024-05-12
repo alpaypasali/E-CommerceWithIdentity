@@ -130,6 +130,12 @@ namespace E_CommerceWithIdentity.Controllers
             }
             return BadRequest("One error occured");
         }
+        //[HttpPost("CreateMultiple/{productId}")]
+        //public async Task<IActionResult> CreateMultipleImage(ProductMultipleImage model , int productId)
+        //{
+        //    List<ProductImageDto> _product 
+
+        //}
 
         public IActionResult Index()
         {

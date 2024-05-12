@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using E_CommerceWithIdentity.Areas.Identity.Data;
 using E_CommerceWithIdentity.Services.Abstract;
 using E_CommerceWithIdentity.Services.Concrete;
+using Microsoft.CodeAnalysis;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +19,7 @@ builder.Services.AddIdentity<ApplicationUser , IdentityRole>()
     .AddDefaultUI(); // AddDefaultUI() bu noktada eklenmeli
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IProductImageService, ProductImageService>();
 
 builder.Services.AddControllersWithViews();
 

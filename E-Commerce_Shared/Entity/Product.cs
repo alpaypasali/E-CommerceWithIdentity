@@ -20,5 +20,7 @@ namespace E_Commerce_Shared.Entity
         public int CategoryId { get; set; }
         public Category Category { get; set; }  
         public string? ImageUrl { get; set; }
+
+        public List<ProductImage> ProductImages { get; set; }   
     }
 }
